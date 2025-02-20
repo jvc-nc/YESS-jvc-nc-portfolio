@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "Memory.h"
 #include "MemoryTester.h"
+#include <cstdint>
 
 /** 
  * MemoryTester constructor

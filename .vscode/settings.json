@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "Tools.C": "cpp",
+        "lab4.C": "cpp",
+        "MemoryTester.C": "cpp"
+    }
+}
