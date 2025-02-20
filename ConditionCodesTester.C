@@ -89,7 +89,7 @@ void ConditionCodesTester::doErrorConditionCodeTests(int32_t ccNum)
    //set the condition code to true
    this->cc->setConditionCode(true, ccNum, error);
    assert(error == true);
-   code = this->cc->getConditionCode(ccNum, error);
+   code = this->cc->getConditionCode(ccNum, error); 
    assert(error == true);
    assert(code == false);
 

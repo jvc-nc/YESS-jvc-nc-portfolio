@@ -46,13 +46,14 @@ ConditionCodes * ConditionCodes::getInstance()
  */
 bool ConditionCodes::getConditionCode(int32_t ccNum, bool & error)
 {
-   if (ccNum != OF && ccNum != SF && ccNum != ZF)
+   if (ccNum == OF || ccNum == SF || ccNum == ZF)
    {
-      error = true;
-      return error;
+      error = false;
+      return Tools::getBits(codes, ccNum, ccNum);
    }
-   error = false;
-   return Tools::getBits(codes, ccNum, ccNum);
+
+   error = true;
+   return false;
 }
 
 /*
@@ -73,18 +74,19 @@ void ConditionCodes::setConditionCode(bool value, int32_t ccNum,
    if (ccNum != OF && ccNum != SF && ccNum != ZF)
    {
       error = true;
-      return;
-   }
-
-   error = false;
-
-   if (value)
-   {
-      codes = Tools::setBits(codes, ccNum, ccNum); 
    }
    else
    {
-      codes = Tools::clearBits(codes, ccNum, ccNum); 
+      error = false;
+
+      if (value)
+      {
+         codes = (u_int32_t) Tools::setBits(codes, ccNum, ccNum); 
+      }
+      else
+      {
+         codes = (u_int32_t) Tools::clearBits(codes, ccNum, ccNum); 
+      }
    }
 
 }
