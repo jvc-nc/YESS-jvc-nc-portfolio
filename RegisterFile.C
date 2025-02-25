@@ -52,9 +52,8 @@ RegisterFile * RegisterFile::getInstance()
 */
 uint64_t RegisterFile::readRegister(int32_t regNumber, bool & error)
 {
-   if (regNumber == 0 || regNumber == 1 || regNumber == 2 || regNumber == 3 || regNumber == 4 || regNumber == 5
-       || regNumber == 6 || regNumber == 7 || regNumber == 8 || regNumber == 9 || regNumber == 0xa || regNumber == 0xb 
-       || regNumber == 0xc || regNumber == 0xd || regNumber == 0xe){
+   if (regNumber >= 0 && regNumber <= 0xe)
+   {
       error = false;
       return reg[regNumber];
    }
@@ -75,9 +74,7 @@ uint64_t RegisterFile::readRegister(int32_t regNumber, bool & error)
 void RegisterFile::writeRegister(uint64_t value, int32_t regNumber, 
                                  bool & error)
 {
-   if (regNumber == 0 || regNumber == 1 || regNumber == 2 || regNumber == 3 || regNumber == 4 || regNumber == 5
-      || regNumber == 6 || regNumber == 7 || regNumber == 8 || regNumber == 9 || regNumber == 0xa || regNumber == 0xb 
-      || regNumber == 0xc || regNumber == 0xd || regNumber == 0xe){
+   if (regNumber >= 0 && regNumber <= 0xe){
      error = false;
      reg[regNumber] = value;
   } else {
