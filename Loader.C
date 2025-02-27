@@ -116,7 +116,7 @@ bool Loader::hasComment(std::string line)
  */
 void Loader::loadLine(std::string line)
 {
-   
+   int32_t addr = convert(line, ADDRBEGIN, 3);
    //Hints:
    //Use the convert method to convert the characters
    //that represent the address into a number.
@@ -139,7 +139,7 @@ void Loader::loadLine(std::string line)
 int32_t Loader::convert(std::string line, int32_t start, int32_t len)
 {
    std::string hexSubstring = line.substr(start, len);
-   return static_cast<int32_t> (strtol(hexSubstring.c_str(), nullptr, 16));
+   return static_cast<int32_t>(std::stoul(hexSubstring, nullptr, 16));
 }
 
 /*
