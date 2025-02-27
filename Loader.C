@@ -137,8 +137,30 @@ void Loader::loadLine(std::string line)
  */
 int32_t Loader::convert(std::string line, int32_t start, int32_t len)
 {
-   //Hint: you need something to convert a string to an int such as strtol 
-   return 0;
+   int32_t result = 0; // Initialize the result to 0
+
+   // Iterate over the specified substring
+   for (int32_t i = start; i < start + len; ++i) {
+       char c = line[i]; // Get the current character
+
+       // Convert the character to its corresponding hexadecimal value
+       int32_t digitValue;
+       if (c >= '0' && c <= '9') {
+           digitValue = c - '0'; // Digits 0-9
+       } else if (c >= 'a' && c <= 'f') {
+           digitValue = 10 + (c - 'a'); // Lowercase letters a-f
+       } else if (c >= 'A' && c <= 'F') {
+           digitValue = 10 + (c - 'A'); // Uppercase letters A-F
+       } else {
+           // Handle invalid hex characters (optional: throw an exception or return an error)
+           throw std::invalid_argument("Invalid hex character: " + std::string(1, c));
+       }
+
+       // Shift the result left by 4 bits (equivalent to multiplying by 16) and add the new digit
+       result = (result << 4) | digitValue;
+   }
+
+   return result;
 }
 
 /*
