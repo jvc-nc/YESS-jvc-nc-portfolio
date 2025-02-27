@@ -116,9 +116,17 @@ bool Loader::hasComment(std::string line)
  */
 void Loader::loadLine(std::string line)
 {
+   int valueLength = 0;
+   int index = DATABEGIN;
+   while (index != ' ')
+   {
+      valueLength ++;
+      index ++;
+   }
+   
    
    int32_t address = convert(line, ADDRBEGIN, ADDREND);
-   uint8_t value = convert(line, DATABEGIN, );
+   uint8_t value = convert(line, DATABEGIN, valueLength);
 
    Memory::getInstance()->putByte(value, address, );
    //Hints:
