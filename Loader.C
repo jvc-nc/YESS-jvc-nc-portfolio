@@ -116,12 +116,17 @@ bool Loader::hasComment(std::string line)
  */
 void Loader::loadLine(std::string line)
 {
-   int32_t addr = convert(line, ADDRBEGIN, 3);
+   
+   int32_t address = convert(line, ADDRBEGIN, ADDREND);
+   uint8_t value = convert(line, DATABEGIN, );
+
+   Memory::getInstance()->putByte(value, address, );
    //Hints:
    //Use the convert method to convert the characters
    //that represent the address into a number.
    //Also, use the convert method for each byte of data.
 }
+
 
 /*
  * convert
