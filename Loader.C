@@ -128,7 +128,8 @@ void Loader::loadLine(std::string line)
    int32_t address = convert(line, ADDRBEGIN, ADDREND);
    uint8_t value = convert(line, DATABEGIN, valueLength);
 
-   Memory::getInstance()->putByte(value, address, );
+   bool error;
+   Memory::getInstance()->putByte(value, address, error);
    //Hints:
    //Use the convert method to convert the characters
    //that represent the address into a number.
