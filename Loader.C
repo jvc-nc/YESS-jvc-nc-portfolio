@@ -118,11 +118,11 @@ void Loader::loadLine(std::string line)
 {
    int valueLength = 0;
    int index = DATABEGIN;
-   while (index != ' ')
-   {
-      valueLength ++;
-      index ++;
-   }
+   //while (line[index] != ' ')
+   //{
+   //   valueLength ++;
+   //   index ++;
+   //}
    
    
    int32_t address = convert(line, ADDRBEGIN, ADDREND);
@@ -153,7 +153,7 @@ void Loader::loadLine(std::string line)
 int32_t Loader::convert(std::string line, int32_t start, int32_t len)
 {
    std::string hexSubstring = line.substr(start, len);
-   return static_cast<int32_t>(std::stoul(hexSubstring, nullptr, 16));
+   return static_cast<int32_t>(std::stoul(hexSubstring, NULL, 16));
 }
 
 /*
