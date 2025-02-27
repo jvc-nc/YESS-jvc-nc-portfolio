@@ -80,10 +80,6 @@ bool Loader::hasAddress(std::string line)
  */
 bool Loader::hasData(std::string line)
 {
-   if (line[DATABEGIN] == ' ')
-   {
-      return true;
-   }
    return false;
 }
 
@@ -262,7 +258,7 @@ bool Loader::isLoaded()
  */
 bool Loader::badFile(std::string filename)
 {
-   //come back through and housekeep later
+   //come back through and housekeep
    std::string extension = ".yo";
    size_t extPos = filename.rfind(extension); 
 
