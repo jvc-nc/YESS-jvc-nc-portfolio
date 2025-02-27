@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -g -c -Wall -std=c++11 -O0
 OBJ = lab5.o Memory.o Tools.o RegisterFile.o \
-Loader.o
+Loader.o ConditionCodes.o
 
 .C.o:
 	$(CC) $(CFLAGS) $< -o $@

@@ -258,14 +258,14 @@ bool Loader::isLoaded()
  */
 bool Loader::badFile(std::string filename)
 {
+   //come back through and housekeep later
    std::string extension = ".yo";
-   size_t extPos = filename.rfind(extension); // Find the last occurrence of ".yo"
+   size_t extPos = filename.rfind(extension); 
 
-   // If ".yo" is not found at the end of the filename, it's invalid
-   if (extPos == std::string::npos || extPos != filename.length() - extension.length()) {
-       return true; // Filename does not end with ".yo"
+   if (extPos == std::string::npos || extPos != filename.length() - extension.length()) 
+   {
+       return true;
    }
 
-   // If both checks pass, the filename is valid
    return false;
 }
