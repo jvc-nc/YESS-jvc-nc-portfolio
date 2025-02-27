@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdint.h>
+#include <algorithm> 
 #include "Loader.h"
 #include "Memory.h"
 
@@ -250,7 +251,14 @@ bool Loader::isLoaded()
  */
 bool Loader::badFile(std::string filename)
 {
-   //Hint: use std::string length method and C strcmp (or std::string find
-   //      or std::string at or ...)
-   return true;
+   std::string extension = ".yo";
+   size_t extPos = filename.rfind(extension); // Find the last occurrence of ".yo"
+
+   // If ".yo" is not found at the end of the filename, it's invalid
+   if (extPos == std::string::npos || extPos != filename.length() - extension.length()) {
+       return true; // Filename does not end with ".yo"
+   }
+
+   // If both checks pass, the filename is valid
+   return false;
 }
