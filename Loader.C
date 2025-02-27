@@ -80,6 +80,10 @@ bool Loader::hasAddress(std::string line)
  */
 bool Loader::hasData(std::string line)
 {
+   if (line[DATABEGIN] == ' ')
+   {
+      return true;
+   }
    return false;
 }
 
