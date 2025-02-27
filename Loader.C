@@ -62,6 +62,7 @@ Loader::Loader(int argc, char * argv[])
  */
 bool Loader::hasAddress(std::string line)
 {
+   return false;
 }
 
 /*
@@ -79,6 +80,7 @@ bool Loader::hasAddress(std::string line)
  */
 bool Loader::hasData(std::string line)
 {
+   return false;
 }
 
 /*
@@ -92,6 +94,7 @@ bool Loader::hasData(std::string line)
  */
 bool Loader::hasComment(std::string line)
 {
+   return false;
 }
 
 /*
@@ -128,6 +131,7 @@ void Loader::loadLine(std::string line)
 int32_t Loader::convert(std::string line, int32_t start, int32_t len)
 {
    //Hint: you need something to convert a string to an int such as strtol 
+   return 0;
 }
 
 /*
@@ -199,6 +203,7 @@ bool Loader::hasErrors(std::string line)
 bool Loader::errorData(std::string line, int32_t & numDBytes)
 {
    //Hint: use isxdigit and isSpaces
+   return false;
 }
 
 /*
@@ -213,6 +218,7 @@ bool Loader::errorData(std::string line, int32_t & numDBytes)
 bool Loader::errorAddr(std::string line)
 {
    //Hint: use isxdigit
+   return false;
 }
 
 /* 
@@ -229,6 +235,7 @@ bool Loader::errorAddr(std::string line)
  */
 bool Loader::isSpaces(std::string line, int32_t start, int32_t end)
 {
+   return false;
 }
 
 /*
