@@ -62,6 +62,9 @@ Loader::Loader(int argc, char * argv[])
  */
 bool Loader::hasAddress(std::string line)
 {
+   if(line[0] == '0'){
+      return true;
+   }
    return false;
 }
 
