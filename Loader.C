@@ -115,22 +115,17 @@ bool Loader::hasComment(std::string line)
  *               a variable number of bytes of data (at least one)
  */
 void Loader::loadLine(std::string line) {
-    // Step 1: Extract the address
     int32_t address = convert(line, ADDRBEGIN, ADDREND);
 
-    // Step 2: Extract and process the data bytes
-    int index = DATABEGIN; // Start of data in the line
+    int index = DATABEGIN;
     while (index < line.length()) {
-        // Each byte is represented by 2 hexadecimal characters
         uint8_t value = convert(line, index, 2);
 
-        // Step 3: Load the byte into memory
         bool error = false;
         Memory::getInstance()->putByte(address, value, error);
 
-        // Move to the next byte
         address++;
-        index += 2; // Each byte is 2 characters
+        index += 2;
     }
 }
 
@@ -151,7 +146,7 @@ void Loader::loadLine(std::string line) {
 int32_t Loader::convert(std::string line, int32_t start, int32_t len)
 {
    std::string hexSubstring = line.substr(start, len);
-   return static_cast<int32_t>(std::stoul(hexSubstring, NULL, 16));
+   return static_cast<u_int8_t>(std::stoul(hexSubstring, NULL, 16));
 }
 
 /*
