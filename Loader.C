@@ -116,6 +116,7 @@ bool Loader::hasComment(std::string line)
  */
 void Loader::loadLine(std::string line)
 {
+   
    //Hints:
    //Use the convert method to convert the characters
    //that represent the address into a number.

@@ -4,6 +4,7 @@
         "MemoryTester.C": "cpp",
         "ConditionCodes.C": "cpp",
         "lab5.C": "cpp",
-        "Loader.C": "cpp"
+        "Loader.C": "cpp",
+        "RegisterFile.C": "cpp"
     }
 }
