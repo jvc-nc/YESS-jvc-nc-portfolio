@@ -50,19 +50,22 @@ Memory * Memory::getInstance()
  */
 uint64_t Memory::getLong(int32_t address, bool & imem_error)
 {
-   if (address >= 0 && address % 8 == 0 && address + 7 < MEMSIZE)
-   {
-      imem_error = false;
-      uint64_t value = 0;
-      for (int i = 0; i < 8; i++)
-      {
-         value = (value << 8) | mem[address + i];
-      }
-      return value;
-   }
-   imem_error = true;
-   return 0;
+    if (address >= 0 && address % 8 == 0 && address + 7 < MEMSIZE)
+    {
+        imem_error = false;
+        uint64_t value = 0;
+
+        for (int i = 7; i >= 0; i--)
+        {
+            value = (value << 8) | mem[address + i];
+        }
+
+        return value;
+    }
+    imem_error = true;
+    return 0;
 }
+
 
 /**
  * getByte

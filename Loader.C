@@ -62,7 +62,7 @@ Loader::Loader(int argc, char * argv[])
  */
 bool Loader::hasAddress(std::string line)
 {
-   if(line[0] == '0'){
+   if(line[0] == 0x30){
       return true;
    }
    return false;
@@ -83,7 +83,7 @@ bool Loader::hasAddress(std::string line)
  */
 bool Loader::hasData(std::string line)
 {
-   if (line[DATABEGIN] == ' ')
+   if (line[DATABEGIN] != 0x20)
    {
       return true;
    }
@@ -114,19 +114,19 @@ bool Loader::hasComment(std::string line)
  *               a .yo file. The line contains an address and
  *               a variable number of bytes of data (at least one)
  */
-void Loader::loadLine(std::string line) {
-    int32_t address = convert(line, ADDRBEGIN, ADDREND);
+void Loader::loadLine(std::string line) 
+{
+   int32_t address = convert(line, ADDRBEGIN, ADDREND - 1);
 
-    int index = DATABEGIN;
-    while (index < line.length()) {
-        uint8_t value = convert(line, index, 2);
 
-        bool error = false;
-        Memory::getInstance()->putByte(address, value, error);
+   for (int i = DATABEGIN; line[i] != 0x20; i += 2)
+   {
+      lastAddress = address + (i - DATABEGIN) / 2;
+      int8_t value = convert(line, i, 2);
 
-        address++;
-        index += 2;
-    }
+      bool error = false;
+      Memory::getInstance()->putByte(value, lastAddress, error);
+   }
 }
 
 
@@ -146,7 +146,7 @@ void Loader::loadLine(std::string line) {
 int32_t Loader::convert(std::string line, int32_t start, int32_t len)
 {
    std::string hexSubstring = line.substr(start, len);
-   return static_cast<u_int8_t>(std::stoul(hexSubstring, NULL, 16));
+   return static_cast<int32_t>(std::stoul(hexSubstring, NULL, 16));
 }
 
 /*
