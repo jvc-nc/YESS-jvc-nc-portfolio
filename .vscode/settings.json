@@ -1,10 +1,14 @@
 {
-    "files.associations": {
-        "Memory.C": "cpp",
-        "MemoryTester.C": "cpp",
-        "ConditionCodes.C": "cpp",
-        "lab5.C": "cpp",
-        "Loader.C": "cpp",
-        "RegisterFile.C": "cpp"
-    }
+  "files.associations": {
+    "Memory.C": "cpp",
+    "MemoryTester.C": "cpp",
+    "ConditionCodes.C": "cpp",
+    "lab5.C": "cpp",
+    "Loader.C": "cpp",
+    "RegisterFile.C": "cpp",
+    "string": "cpp",
+    "string_view": "cpp",
+    "unordered_map": "cpp"
+  },
+  "C_Cpp_Runner.msvcBatchPath": ""
 }

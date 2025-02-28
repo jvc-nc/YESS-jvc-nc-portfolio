@@ -126,7 +126,7 @@ void Loader::loadLine(std::string line) {
 
         // Step 3: Load the byte into memory
         bool error = false;
-        Memory::getInstance()->putByte(address, value, error);
+        Memory::getInstance()->putByte(address, static_cast<uint8_t>(value), error);
 
         // Move to the next byte
         address++;
