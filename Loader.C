@@ -122,7 +122,7 @@ void Loader::loadLine(std::string line) {
         uint8_t value = convert(line, index, 2);
 
         bool error = false;
-        Memory::getInstance()->putByte(address, value, error);
+        Memory::getInstance()->putByte(address, static_cast<uint8_t>(value), error);
 
         address++;
         index += 2;
