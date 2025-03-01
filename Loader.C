@@ -117,7 +117,6 @@ bool Loader::hasComment(std::string line)
  *               a .yo file. The line contains an address and
  *               a variable number of bytes of data (at least one)
  */
-<<<<<<< HEAD
 void Loader::loadLine(std::string line) 
 {
    int32_t address = convert(line, ADDRBEGIN, ADDREND - 1);
@@ -130,22 +129,6 @@ void Loader::loadLine(std::string line)
 
       bool error = false;
       Memory::getInstance()->putByte(value, lastAddress, error);
-=======
-void Loader::loadLine(std::string line)
-{
-   int32_t address = convert(line, ADDRBEGIN, ADDREND);
-
-   int index = DATABEGIN;
-   while (index < line.length())
-   {
-      uint8_t value = convert(line, index, 2);
-
-      bool error = false;
-      Memory::getInstance()->putByte(address, static_cast<uint8_t>(value), error);
-
-      address++;
-      index += 2;
->>>>>>> b58ecf42253c1f318d0dbe4e24df27a0d7595775
    }
 }
 
