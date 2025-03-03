@@ -65,9 +65,11 @@ Loader::Loader(int argc, char *argv[])
  */
 bool Loader::hasAddress(std::string line)
 {
-   if(line[0] == 0x30){
+   if(line[0] == 0x30)
+   {
       return true;
    }
+   
    return false;
 }
 
@@ -90,6 +92,7 @@ bool Loader::hasData(std::string line)
    {
       return true;
    }
+
    return false;
 }
 
@@ -104,10 +107,11 @@ bool Loader::hasData(std::string line)
  */
 bool Loader::hasComment(std::string line)
 {
-   if (line.length() >= COMMENT && line[COMMENT] == '|')
+   if (line.length() >= COMMENT && line[COMMENT] == 0x7c)
    {
       return true;
    }
+
    return false;
 }
 
@@ -125,12 +129,10 @@ void Loader::loadLine(std::string line)
 {
    int32_t address = convert(line, ADDRBEGIN, ADDREND - 1);
 
-
    for (int i = DATABEGIN; line[i] != 0x20; i += 2)
    {
       lastAddress = address + (i - DATABEGIN) / 2;
       int8_t value = convert(line, i, 2);
-
       bool error = false;
       Memory::getInstance()->putByte(value, lastAddress, error);
    }
@@ -172,36 +174,75 @@ bool Loader::hasErrors(std::string line)
    // 1) line is at least COMMENT characters long and contains a '|' in
    //    column COMMENT. If not, return true
    //    Hint: use hasComment
+   if (!hasComment(line) && line.length() >= COMMENT)
+   {
+      return true;
+   }
+
    //
    // 2) check whether line has an address.  If it doesn't,
    //    return result of isSpaces (line must be all spaces up
    //    to the | character)
    //    Hint: use hasAddress and isSpaces
    //
+   if (!hasAddress(line) && !isSpaces(line, 0, COMMENT - 1))
+   {
+      return true;
+   }
+
+   
    // 3) return true if the address is invalid
    //    Hint: use errorAddress
-   //
+   if (hasAddress(line) && errorAddr(line))
+   {
+      return true;
+   }
+
    // 4) check whether the line has data. If it doesn't
    //    return result of isSpaces (line must be all spaces from
    //    after the address up to the | character)
    //    Hint: use hasData and isSpaces
    //
+   if (!hasData(line) && !isSpaces(line, DATABEGIN, COMMENT - 1))
+   {
+      return true;
+   }
+
    // 5) if you get past 4), line has an address and data. Check to
    //    make sure the data is valid using errorData
    //    Hint: use errorData
    //
+   int32_t numDBytes = 0;
+   if (errorData(line, numDBytes))
+   {
+      return true;
+   }
+
    // 6) if you get past 5), line has a valid address and valid data.
    //    Make sure that the address on this line is > the last address
    //    stored to (lastAddress is a private data member)
    //    Hint: use convert to convert address to a number and compare
    //    to lastAddress
    //
-   // 7) Make sure that the last address of the data to be stored
-   //    by this line doesn't exceed the memory size
-   //    Hint: use numDBytes as set by errorData, MEMSIZE in Memory.h,
-   //          and addr returned by convert
-
+   if (hasAddress(line) && hasData(line) && hasComment(line))
+   {
+      int32_t address = convert(line, ADDRBEGIN, ADDREND - 1);
+      if (address <= lastAddress)
+      {
+         return true;
+      }
+   
+      // 7) Make sure that the last address of the data to be stored
+      //    by this line doesn't exceed the memory size
+      //    Hint: use numDBytes as set by errorData, MEMSIZE in Memory.h,
+      //    and addr returned by convert
+      if (address + numDBytes > MEMSIZE)
+      {
+         return true;
+      }
+   }
    // if control reaches here, no errors found
+
    return false;
 }
 
@@ -224,7 +265,35 @@ bool Loader::hasErrors(std::string line)
  */
 bool Loader::errorData(std::string line, int32_t &numDBytes)
 {
-   // Hint: use isxdigit and isSpaces
+   int numChar = 0; 
+
+   for (int i = DATABEGIN; i < (int) line.length(); i++)
+   {
+      if (line[i] == 0x20)
+      {
+         break;
+      }
+
+      if (!isxdigit(line[i]))
+      {
+         return true;
+      }
+
+      numChar++;
+   }
+
+   if (numChar % 2 != 0)
+   {
+      return true;
+   }
+
+   if (!isSpaces(line, numChar + DATABEGIN, COMMENT - 1))
+   {
+      return true;
+   }
+
+   numDBytes = numChar / 2;
+
    return false;
 }
 
@@ -239,6 +308,13 @@ bool Loader::errorData(std::string line, int32_t &numDBytes)
  */
 bool Loader::errorAddr(std::string line)
 {
+   if (line.length() < ADDREND + 1 || line[0] != 0x30 || line[1] != 0x78 || 
+      !isxdigit(line[2]) || !isxdigit(line[3]) || !isxdigit(line[4]) || 
+      line[5] != 0x3a || line[6] != 0x20)
+   {
+      return true;
+   }
+
    // Hint: use isxdigit
    return false;
 }
@@ -259,11 +335,12 @@ bool Loader::isSpaces(std::string line, int32_t start, int32_t end)
 {
    for (int i = start; i <= end; i++)
    {
-      if (line[i] != ' ')
+      if (line[i] != 0x20)
       {
          return false;
       }
    }
+
    return true;
 }
 
@@ -288,9 +365,13 @@ bool Loader::isLoaded()
 bool Loader::badFile(std::string filename)
 {
    std::string extension = ".yo";
-   size_t extPos = filename.rfind(extension);
+   
+   if (filename.length() <= 4)
+   {
+      return true;
+   }
 
-   if (extPos == std::string::npos || extPos != filename.length() - extension.length())
+   if (filename.substr(filename.length() - extension.length()) != extension)
    {
       return true;
    }
