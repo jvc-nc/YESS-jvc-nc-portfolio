@@ -104,6 +104,10 @@ bool Loader::hasData(std::string line)
  */
 bool Loader::hasComment(std::string line)
 {
+   if (line.length() >= COMMENT && line[COMMENT] == '|')
+   {
+      return true;
+   }
    return false;
 }
 
@@ -160,6 +164,7 @@ int32_t Loader::convert(std::string line, int32_t start, int32_t len)
  * @return true, if the line has errors
  *         false, otherwise
  */
+
 bool Loader::hasErrors(std::string line)
 {
    // checking for errors in a particular order can significantly
@@ -252,7 +257,14 @@ bool Loader::errorAddr(std::string line)
  */
 bool Loader::isSpaces(std::string line, int32_t start, int32_t end)
 {
-   return false;
+   for (int i = start; i <= end; i++)
+   {
+      if (line[i] != ' ')
+      {
+         return false;
+      }
+   }
+   return true;
 }
 
 /*
@@ -275,7 +287,6 @@ bool Loader::isLoaded()
  */
 bool Loader::badFile(std::string filename)
 {
-   // come back through and housekeep
    std::string extension = ".yo";
    size_t extPos = filename.rfind(extension);
 
