@@ -1,0 +1,32 @@
+# Ignore compiled object files
+*.o
+
+# Ignore binary and executable files
+*.out
+*.exe
+*.bin
+
+# Ignore backup and temporary files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Ignore specific files
+asumr.yo
+lab5
+
+# Ignore all lab directories if they follow a pattern (e.g., lab1, lab2, lab3, etc.)
+lab*
+
+# Ignore VSCode settings and metadata
+.vscode/
+
+# Ignore Git credentials or sensitive files
+*.git-cred
+
+# Ignore logs and debugging files
+*.log
+*.bak
+*.tmp

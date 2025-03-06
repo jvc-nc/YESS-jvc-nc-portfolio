@@ -54,15 +54,18 @@ uint64_t Memory::getLong(int32_t address, bool & imem_error)
    {
       imem_error = false;
       uint64_t value = 0;
-      for (int i = 0; i < 8; i++)
+
+      for (int i = 7; i >= 0; i--)
       {
          value = (value << 8) | mem[address + i];
       }
+
       return value;
-   }
-   imem_error = true;
-   return 0;
+    }
+    imem_error = true;
+    return 0;
 }
+
 
 /**
  * getByte
