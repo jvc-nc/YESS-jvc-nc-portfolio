@@ -21,9 +21,8 @@ RegisterFile.o: Tools.h RegisterFile.h
 
 ConditionCodes.o: ConditionCodes.h Tools.h
 
-
 clean:
-	rm $(OBJ) lab4
+	rm $(OBJ) lab5
 
 run:
 	make clean
