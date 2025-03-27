@@ -53,14 +53,15 @@ bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
       icode = Tools::getBits(readByte, 4, 7);
       ifun = Tools::getBits(readByte, 0, 3);
 
-      bool needRegId = needRegIds(icode);
-      bool needValc = needValC(icode);
+      bool need_regId = needRegIds(icode);
+      bool need_valC = needValC(icode);
       
-      valP = PCincrement(f_pc, needRegId, needValc);
+      valP = PCincrement(f_pc, need_regId, need_valC);
 
       freg->getpredPC()->setInput(predictPC(icode, valC, valP));
 
-      getRegIds(f_pc, icode, rA, rB);
+      getRegIds(f_pc, icode, rA, rB, need_regId);
+      buildValC(f_pc, icode, valC, need_regId, need_valC);
    }
 
    setDInput(dreg, stat, icode, ifun, rA, rB, valC, valP);
@@ -122,9 +123,8 @@ bool FetchStage::needRegIds(uint64_t f_icode)
    return false;
 }
 
-void FetchStage::getRegIds(uint64_t f_pc, uint64_t icode, uint64_t & rA, uint64_t & rB)
+void FetchStage::getRegIds(uint64_t f_pc, uint64_t icode, uint64_t & rA, uint64_t & rB, bool need_regId)
 {
-   bool need_regId = needRegIds(icode);
    if (need_regId)
    {
       bool error = false;
@@ -144,13 +144,21 @@ bool FetchStage::needValC(uint64_t f_icode)
    return false;
 }
 
-void FetchStage::buildValC(uint64_t f_icode)
+void FetchStage::buildValC(uint64_t f_pc, uint64_t icode, uint64_t & valC, bool need_regId, bool need_valC)
 {
-   bool need_valC = needValC(icode);
    if (need_valC)
    {
+      if (need_regId)
+      {
+         f_pc += 2;
+      }
+      else 
+      {
+         f_pc++;
+      }
+
       bool error = false;
-      uint64_t regByte = Memory::getInstance()->getLong(f_pc + 1, error);
+      valC = Memory::getInstance()->getLong(f_pc, error);
    }
 }
 
@@ -208,4 +216,3 @@ void FetchStage::setDInput(D * dreg, uint64_t stat, uint64_t icode,
    dreg->getvalC()->setInput(valC);
    dreg->getvalP()->setInput(valP);
 }
-     
