@@ -15,6 +15,7 @@
 #include "WritebackStage.h"
 #include "Status.h"
 #include "Debug.h"
+#include "Instructions.h"
 
 
 /*
@@ -68,6 +69,76 @@ void DecodeStage::doClockHigh(PipeReg ** pregs)
     ereg->getsrcA()->normal();
     ereg->getsrcB()->normal();
 }
+
+uint64_t DecodeStage::d_srcA(D * dreg, uint64_t D_rA)
+{
+    uint64_t D_icode = dreg->geticode()->getOutput();
+
+    if (D_icode == IRRMOVQ || D_icode == IRMMOVQ || D_icode == IOPQ || D_icode == IPUSHQ)
+    {
+        return D_rA;
+    }
+    else if (D_icode == IPOPQ || D_icode == IRET)
+    {
+        return RSP;
+    }
+    else
+    {
+        return RNONE;
+    }
+}
+
+uint64_t DecodeStage::d_srcB(D * dreg, uint64_t D_rB)
+{
+    uint64_t D_icode = dreg->geticode()->getOutput();
+
+    if (D_icode == IOPQ || D_icode == IRMMOVQ || D_icode == IMRMOVQ)
+    {
+        return D_rB;
+    }
+    else if (D_icode == IPUSHQ || D_icode == IPOPQ || D_icode == ICALL || D_icode == IRET)
+    {
+        return RSP;
+    }
+    else
+    {
+        return RNONE;
+    }
+}
+
+uint64_t DecodeStage::d_dstE(D * dreg, uint64_t D_rB)
+{
+    uint64_t D_icode = dreg->geticode()->getOutput();
+
+    if (D_icode == IRRMOVQ || D_icode == IIRMOVQ || D_icode == IOPQ)
+    {
+        return D_rB;
+    }
+    else if (D_icode == IPUSHQ || D_icode == IPOPQ || D_icode == ICALL || D_icode == IRET)
+    {
+        return RSP;
+    }
+    else
+    {
+        return RNONE;
+    }
+}
+
+uint64_t DecodeStage::d_dstM(D * dreg, uint64_t D_rA)
+{
+    uint64_t D_icode = dreg->geticode()->getOutput();
+
+    if (D_icode == IMRMOVQ || D_icode == IPOPQ)
+    {
+        return D_rA;
+    }
+    else
+    {
+        return RNONE;
+    }
+}
+
+
 
 /* setInput
  * provides the input to potentially be stored in the E register
