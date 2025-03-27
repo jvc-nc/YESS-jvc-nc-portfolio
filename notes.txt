@@ -1,7 +1,0 @@
-ConditionCodes.C
-ConditionCodesTester.C
-Memory.C
-MemoryTester.C
-RegisterFiles.C
-RegisterFileTester.C
-Tools.C

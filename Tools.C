@@ -43,11 +43,12 @@
 */
 uint64_t Tools::buildLong(uint8_t bytes[LONGSIZE])
 {
-  long totalLong = 0;
-  for (int i = 7; i >= 0; i--){
-    totalLong = (totalLong << 8) + bytes[i];
+  uint64_t newLong = 0;
+  for (int i = LONGSIZE - 1; i >= 0; --i) 
+  {
+    newLong = (newLong << LONGSIZE) | bytes[i];
   }
-  return totalLong;
+  return newLong;
 }
 
 /** 
@@ -71,11 +72,12 @@ uint64_t Tools::buildLong(uint8_t bytes[LONGSIZE])
 */
 uint64_t Tools::getByte(uint64_t source, int32_t byteNum)
 {
-  if (byteNum > 7 || byteNum < 0){
+  if (0 > byteNum || byteNum > 7) 
+  {
     return 0;
   }
-  source = (source >> (byteNum * 8)) & 0xFF;
-  return source;
+  uint8_t oneByte = (source >> byteNum * 8) & 0xFF;
+  return oneByte;
 }
 
 /**
@@ -105,14 +107,13 @@ uint64_t Tools::getByte(uint64_t source, int32_t byteNum)
  */
 uint64_t Tools::getBits(uint64_t source, int32_t low, int32_t high)
 {
-  if (low < 0 || high > 63 || low > high){
+  if (low < 0 || high > 63 || low > high) 
+  {
     return 0;
   }
-  source = source >> low;
-  int rightShift = (63 + low) - high;
-  source = source << rightShift;
-  source = source >> rightShift;
-  return source;
+  uint64_t numBits = source << (63 - high);
+  numBits = numBits >> ((63 - high) + low);
+  return numBits;
 }
 
 
@@ -140,14 +141,13 @@ uint64_t Tools::getBits(uint64_t source, int32_t low, int32_t high)
  */
 uint64_t Tools::setBits(uint64_t source, int32_t low, int32_t high)
 {
-  if (low < 0 || high > 63 || low > high) {
-      return source;
-    } if (low == 0 && high == 63) {
-      long ones = ~0;  
-      return ones;
-    }
-
-  long mask = ((1ULL << (high - low + 1)) - 1) << low;
+  if (low < 0 || high > 63 || low > high) 
+  {
+    return source;
+  }
+  uint64_t mask = -1;
+  mask = getBits(mask, low, high);
+  mask = mask << low;
   return source | mask;
 }
 
@@ -173,11 +173,13 @@ uint64_t Tools::setBits(uint64_t source, int32_t low, int32_t high)
  */
 uint64_t Tools::clearBits(uint64_t source, int32_t low, int32_t high)
 {
-  if (low < 0 || high > 63 || low > high) {
+  if (low < 0 || high > 63 || low > high) 
+  {
     return source;
   }
-
-  long mask = ((1ULL << (high - low + 1)) - 1) << low;
+  uint64_t mask = -1;
+  mask = getBits(mask, low, high);
+  mask = mask << low;
   mask = ~mask;
   return source & mask;
 }
@@ -210,16 +212,15 @@ uint64_t Tools::clearBits(uint64_t source, int32_t low, int32_t high)
 uint64_t Tools::copyBits(uint64_t source, uint64_t dest, 
                          int32_t srclow, int32_t dstlow, int32_t length)
 {
-  if (srclow < 0 || dstlow < 0 || length <= 0 || srclow + length > 64 || dstlow + length > 64){
+  if (srclow < 0 || srclow + length > 64 || dstlow < 0 || dstlow + length > 64) 
+  {
     return dest;
-    }
-
-  long src_bits = getBits(source, srclow, srclow + length - 1);
-
-  dest = clearBits(dest, dstlow, dstlow + length - 1);
-  src_bits = src_bits << dstlow;
-  dest = dest | src_bits;
-  return dest;  
+  }
+  uint64_t bitCopy = getBits(source, srclow, (srclow + length) - 1);
+  dest = clearBits(dest, dstlow, (dstlow + length) - 1);
+  bitCopy = bitCopy << dstlow;
+  dest = bitCopy | dest; 
+  return dest;
 }
 
 
@@ -244,10 +245,10 @@ uint64_t Tools::copyBits(uint64_t source, uint64_t dest,
  */
 uint64_t Tools::setByte(uint64_t source, int32_t byteNum)
 {
-  long mask = 0;
-  mask = ((byteNum >= 0 && byteNum <= 7) * ((1ULL << 8) - 1)) << (byteNum * 8);
-
-  return source | mask;
+    uint64_t mask = (uint64_t) 0xFF << (byteNum * 8);
+    uint64_t valid = (byteNum >= 0 && byteNum < 8) * -1;
+    uint64_t result = source | (mask & valid);
+    return result;
 }
 
 
@@ -293,12 +294,11 @@ uint64_t Tools::sign(uint64_t source)
  */
 bool Tools::addOverflow(uint64_t op1, uint64_t op2)
 {
-  long result = op1 + op2;
-
-  if (sign(op1) == sign(op2) && sign(op1) != sign(result)){
-    return true;
-  }
-  return false;
+  uint64_t sum = op1 + op2;
+  uint64_t op1Sign = sign(op1);
+  uint64_t op2Sign = sign(op2);
+  uint64_t opSignSum = sign(sum);
+  return op1Sign == op2Sign && op1Sign != opSignSum;
 }
 
 /**
@@ -323,10 +323,8 @@ bool Tools::addOverflow(uint64_t op1, uint64_t op2)
  */
 bool Tools::subOverflow(uint64_t op1, uint64_t op2)
 {
-    long result = op2 - op1;
-
-    if(sign(op2) != sign(op1) && sign(op2) != sign(result)){
-      return true;
-    }
-    return false;
+  uint64_t subtract = op2 - op1;
+  uint64_t op1Sign = sign(op1);
+  uint64_t opSignSubtract = sign(subtract);
+  return op1Sign == opSignSubtract;
 }

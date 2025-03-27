@@ -21,7 +21,7 @@ lab5
 lab*
 
 # Ignore VSCode settings and metadata
-.vscode/
+.vscode/settings.json
 
 # Ignore Git credentials or sensitive files
 *.git-cred

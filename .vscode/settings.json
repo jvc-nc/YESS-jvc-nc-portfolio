@@ -56,7 +56,22 @@
     "stdexcept": "cpp",
     "streambuf": "cpp",
     "typeinfo": "cpp",
-    "Tools.C": "cpp"
+    "Tools.C": "cpp",
+    "FetchStage.C": "cpp",
+    "D.C": "cpp",
+    "F.C": "cpp",
+    "DecodeStage.C": "cpp",
+    "ExecuteStage.C": "cpp",
+    "MemoryStage.C": "cpp",
+    "WritebackStage.C": "cpp",
+    "E.C": "cpp",
+    "PipeRegField.C": "cpp",
+    "yess.C": "cpp",
+    "M.C": "cpp",
+    "FuckYou.C": "cpp",
+    "Simulate.C": "cpp",
+    "PipeReg.C": "cpp",
+    "W.C": "cpp"
   },
   "C_Cpp_Runner.msvcBatchPath": ""
 }
