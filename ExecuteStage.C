@@ -44,6 +44,7 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
    dstM = ereg->getdstM()->getOutput();
    srcA = ereg->getsrcA()->getOutput();
    srcB = ereg->getsrcB()->getOutput();
+   valE = ereg->getvalC()->getOutput();
 
    setMInput(mreg, stat, icode, Cnd, valE, valA, dstE, dstM);
    return false;

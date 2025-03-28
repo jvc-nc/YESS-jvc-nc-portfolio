@@ -43,6 +43,13 @@ bool DecodeStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     valC = dreg->getvalC()->getOutput();
     valP = dreg->getvalP()->getOutput();
 
+    srcA = d_srcA(dreg, rA, icode);
+    srcB = d_srcB(dreg, rB, icode);
+    dstE = d_dstE(dreg, rB, icode);
+    dstM = d_dstM(dreg, rA, icode);
+    valA = d_valA(srcA);
+    valB = d_valB(srcB);
+    
     setEInput(ereg, stat, icode, ifun, valC, valA, valB, dstE, dstM, srcA, srcB);
 
     return false;
@@ -70,10 +77,8 @@ void DecodeStage::doClockHigh(PipeReg ** pregs)
     ereg->getsrcB()->normal();
 }
 
-uint64_t DecodeStage::d_srcA(D * dreg, uint64_t D_rA)
+uint64_t DecodeStage::d_srcA(D * dreg, uint64_t D_rA, uint64_t D_icode)
 {
-    uint64_t D_icode = dreg->geticode()->getOutput();
-
     if (D_icode == IRRMOVQ || D_icode == IRMMOVQ || D_icode == IOPQ || D_icode == IPUSHQ)
     {
         return D_rA;
@@ -88,10 +93,8 @@ uint64_t DecodeStage::d_srcA(D * dreg, uint64_t D_rA)
     }
 }
 
-uint64_t DecodeStage::d_srcB(D * dreg, uint64_t D_rB)
+uint64_t DecodeStage::d_srcB(D * dreg, uint64_t D_rB, uint64_t D_icode)
 {
-    uint64_t D_icode = dreg->geticode()->getOutput();
-
     if (D_icode == IOPQ || D_icode == IRMMOVQ || D_icode == IMRMOVQ)
     {
         return D_rB;
@@ -106,10 +109,8 @@ uint64_t DecodeStage::d_srcB(D * dreg, uint64_t D_rB)
     }
 }
 
-uint64_t DecodeStage::d_dstE(D * dreg, uint64_t D_rB)
+uint64_t DecodeStage::d_dstE(D * dreg, uint64_t D_rB, uint64_t D_icode)
 {
-    uint64_t D_icode = dreg->geticode()->getOutput();
-
     if (D_icode == IRRMOVQ || D_icode == IIRMOVQ || D_icode == IOPQ)
     {
         return D_rB;
@@ -124,10 +125,8 @@ uint64_t DecodeStage::d_dstE(D * dreg, uint64_t D_rB)
     }
 }
 
-uint64_t DecodeStage::d_dstM(D * dreg, uint64_t D_rA)
+uint64_t DecodeStage::d_dstM(D * dreg, uint64_t D_rA, uint64_t D_icode)
 {
-    uint64_t D_icode = dreg->geticode()->getOutput();
-
     if (D_icode == IMRMOVQ || D_icode == IPOPQ)
     {
         return D_rA;
@@ -138,7 +137,17 @@ uint64_t DecodeStage::d_dstM(D * dreg, uint64_t D_rA)
     }
 }
 
+uint64_t DecodeStage::d_valA(uint64_t d_srcA)
+{
+    bool error = false;
+    return RegisterFile::getInstance()->readRegister(d_srcA, error);
+}
 
+uint64_t DecodeStage::d_valB(uint64_t d_srcB)
+{
+    bool error = false;
+    return RegisterFile::getInstance()->readRegister(d_srcB, error);
+}
 
 /* setInput
  * provides the input to potentially be stored in the E register

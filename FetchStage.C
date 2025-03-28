@@ -19,6 +19,7 @@
 #include "Instructions.h"
 #include "Memory.h"
 #include "Tools.h"
+#include <iostream>
 
 
 /*
@@ -38,7 +39,7 @@ bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
    W * wreg = (W *) pregs[WREG];
    uint64_t f_pc = 0, icode = 0, ifun = 0, valC = 0, valP = 0;
    uint64_t rA = RNONE, rB = RNONE, stat = SAOK;
-
+   
    f_pc = selectPC(freg, mreg, wreg);
    Memory * mem = Memory::getInstance();
    bool error = false;
@@ -56,12 +57,12 @@ bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
       bool need_regId = needRegIds(icode);
       bool need_valC = needValC(icode);
       
+      getRegIds(f_pc, icode, rA, rB, need_regId);
+      buildValC(f_pc, icode, valC, need_regId, need_valC);
+      
       valP = PCincrement(f_pc, need_regId, need_valC);
 
       freg->getpredPC()->setInput(predictPC(icode, valC, valP));
-
-      getRegIds(f_pc, icode, rA, rB, need_regId);
-      buildValC(f_pc, icode, valC, need_regId, need_valC);
    }
 
    setDInput(dreg, stat, icode, ifun, rA, rB, valC, valP);
@@ -136,7 +137,7 @@ void FetchStage::getRegIds(uint64_t f_pc, uint64_t icode, uint64_t & rA, uint64_
 
 bool FetchStage::needValC(uint64_t f_icode)
 {
-   if (f_icode == IRRMOVQ || f_icode == IRMMOVQ || f_icode == IMRMOVQ || 
+   if (f_icode == IIRMOVQ || f_icode == IRMMOVQ || f_icode == IMRMOVQ || 
       f_icode == IJXX || f_icode == ICALL)
    {
       return true;
@@ -148,17 +149,27 @@ void FetchStage::buildValC(uint64_t f_pc, uint64_t icode, uint64_t & valC, bool 
 {
    if (need_valC)
    {
+      Memory * mem = Memory::getInstance();
+      bool error = false;
+      uint64_t increment = 2;
       if (need_regId)
       {
-         f_pc += 2;
+         increment = 2;
       }
       else 
       {
-         f_pc++;
+         increment = 3;
       }
 
-      bool error = false;
-      valC = Memory::getInstance()->getLong(f_pc, error);
+      for (int i = increment; i < 8; i++)
+      {
+         error = false;
+         uint64_t regByte = mem->getByte(f_pc + i, error);
+         if (!error)
+         {
+            valC += regByte;
+         }
+      }
    }
 }
 
@@ -173,22 +184,20 @@ uint64_t FetchStage::predictPC(uint64_t f_icode, uint64_t f_valC, uint64_t f_val
 
 uint64_t FetchStage::PCincrement(uint64_t f_pc, bool needRegIds, bool needValC)
 {
-   if (needRegIds && needValC)
+   if (needRegIds)
    {
-      return f_pc + 10;
+      if (needValC)
+      {
+         return f_pc + 10;
+      }
    }
-   else if (!needRegIds && needValC)
+   
+   if (needValC)
    {
       return f_pc + 9;
    }
-   else if (needRegIds && !needValC)
-   {
-      return f_pc + 2;
-   }
-   else 
-   {
-      return f_pc + 1;
-   }
+
+   return f_pc + 1;
 }
 
 /* setDInput
