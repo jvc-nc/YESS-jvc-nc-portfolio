@@ -51,6 +51,7 @@ ConditionCodes.o: ConditionCodes.h Tools.h
 
 clean:
 	rm $(OBJ) yess
+	rm -rf Outputs
 
 run:
 	make clean

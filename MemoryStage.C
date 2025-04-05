@@ -9,10 +9,7 @@
 #include "M.h"
 #include "W.h"
 #include "Stage.h"
-#include "DecodeStage.h"
-#include "ExecuteStage.h"
 #include "MemoryStage.h"
-#include "WritebackStage.h"
 #include "Status.h"
 #include "Debug.h"
 

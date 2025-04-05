@@ -30,3 +30,10 @@ lab*
 *.log
 *.bak
 *.tmp
+
+# Ignore dump and yo files
+*.idump
+*.sdump
+*.dump
+*.yo
+/Outputs/*.*

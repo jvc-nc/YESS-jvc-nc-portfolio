@@ -10,16 +10,12 @@
 #include "W.h"
 #include "Stage.h"
 #include "FetchStage.h"
-#include "DecodeStage.h"
-#include "ExecuteStage.h"
-#include "MemoryStage.h"
-#include "WritebackStage.h"
 #include "Status.h"
 #include "Debug.h"
 #include "Instructions.h"
 #include "Memory.h"
 #include "Tools.h"
-#include <iostream>
+
 
 
 /*
@@ -151,24 +147,23 @@ void FetchStage::buildValC(uint64_t f_pc, uint64_t icode, uint64_t & valC, bool 
    {
       Memory * mem = Memory::getInstance();
       bool error = false;
-      uint64_t increment = 2;
+      valC = 0;
+
+      int offset = 1;
       if (need_regId)
       {
-         increment = 2;
-      }
-      else 
-      {
-         increment = 3;
+         offset += 1;
       }
 
-      for (int i = increment; i < 8; i++)
+      for (int i = 0; i < 8; i++)
       {
-         error = false;
-         uint64_t regByte = mem->getByte(f_pc + i, error);
-         if (!error)
+         uint64_t byte = mem->getByte(f_pc + offset + i, error);
+         if (error)
          {
-            valC += regByte;
+            valC = 0;
+            return;
          }
+         valC |= (byte << (8 * i));
       }
    }
 }
