@@ -143,29 +143,12 @@ bool FetchStage::needValC(uint64_t f_icode)
 
 void FetchStage::buildValC(uint64_t f_pc, uint64_t icode, uint64_t & valC, bool need_regId, bool need_valC)
 {
-   if (need_valC)
-   {
-      Memory * mem = Memory::getInstance();
-      bool error = false;
-      valC = 0;
+   bool error;
 
-      int offset = 1;
-      if (need_regId)
-      {
-         offset += 1;
-      }
-
-      for (int i = 0; i < 8; i++)
-      {
-         uint64_t byte = mem->getByte(f_pc + offset + i, error);
-         if (error)
-         {
-            valC = 0;
-            return;
-         }
-         valC |= (byte << (8 * i));
-      }
-   }
+   uint64_t start_pc = f_pc;
+   if (icode <= IMRMOVQ) start_pc += 2;
+   else start_pc += 1;
+   valC = Memory::getInstance()->getLong(start_pc, error);
 }
 
 uint64_t FetchStage::predictPC(uint64_t f_icode, uint64_t f_valC, uint64_t f_valP)
