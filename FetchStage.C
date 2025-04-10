@@ -33,7 +33,8 @@ bool FetchStage::doClockLow(PipeReg **pregs, Stage **stages)
    W *wreg = (W *)pregs[WREG];
 
    uint64_t f_pc = selectPC(freg, mreg, wreg);
-   uint64_t icode = 0, ifun = 0, valC = 0, valP = 0;
+   uint64_t icode = 0, ifun = 0, valP = 0;
+   int64_t valC = 0;
    uint64_t rA = RNONE, rB = RNONE, stat = SAOK;
 
    Memory *mem = Memory::getInstance();
@@ -144,7 +145,7 @@ bool FetchStage::needValC(uint64_t f_icode)
            f_icode == IJXX || f_icode == ICALL);
 }
 
-void FetchStage::buildValC(uint64_t f_pc, uint64_t icode, uint64_t &valC, bool need_regId, bool need_valC)
+void FetchStage::buildValC(uint64_t f_pc, uint64_t icode, int64_t &valC, bool need_regId, bool need_valC)
 {
    if (need_valC)
    {
@@ -153,7 +154,7 @@ void FetchStage::buildValC(uint64_t f_pc, uint64_t icode, uint64_t &valC, bool n
 
       uint64_t incrementedPC = PCincrement(f_pc, need_regId, false);
       valC = 0;
-      for (int i = 0; i < 5; i++)
+      for (int i = 0; i < 8; i++)
       {
          uint64_t byte = mem->getByte(incrementedPC + i, error);
          if (error)
