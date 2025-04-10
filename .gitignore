@@ -37,3 +37,10 @@ lab*
 *.dump
 *.yo
 /Outputs/*.*
+
+# Ignore iyas and iyessl8 executables
+iyas
+iyessl8
+
+# Other ignored files and directories
+Outputs/
