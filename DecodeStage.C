@@ -35,7 +35,7 @@ bool DecodeStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     W *wreg = (W *)pregs[WREG];
     ExecuteStage *executeStage = (ExecuteStage *)stages[ESTAGE];
 
-    uint64_t icode = 0, ifun = 0, valA = 0, valB = 0, valC = 0, valP = 0;
+    uint64_t icode = 0, ifun = 0, valA = 0, valB = 0, valC = 0;
     uint64_t stat = SAOK, rA = RNONE, rB = RNONE, dstE = RNONE, dstM = RNONE, srcA = RNONE, srcB = RNONE;
 
     stat = dreg->getstat()->getOutput();
@@ -44,7 +44,6 @@ bool DecodeStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     rA = dreg->getrA()->getOutput();
     rB = dreg->getrB()->getOutput();
     valC = dreg->getvalC()->getOutput();
-    valP = dreg->getvalP()->getOutput();
 
     srcA = d_srcA(dreg, rA, icode);
     srcB = d_srcB(dreg, rB, icode);
