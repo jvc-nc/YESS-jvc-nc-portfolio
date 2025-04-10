@@ -16,7 +16,6 @@
 #include "ConditionCodes.h"
 #include "Tools.h"
 
-
 /*
  * doClockLow:
  * Performs the Execute stage combinational logic that is performed when
@@ -28,55 +27,49 @@
  */
 bool ExecuteStage::doClockLow(PipeReg **pregs, Stage **stages)
 {
-   E *ereg = (E *)pregs[EREG];
-   M *mreg = (M *)pregs[MREG];
+    E *ereg = (E *)pregs[EREG];
+    M *mreg = (M *)pregs[MREG];
 
-   uint64_t icode = ereg->geticode()->getOutput();
-   uint64_t ifun = ereg->getifun()->getOutput();
-   uint64_t valC = ereg->getvalC()->getOutput();
-   uint64_t valA = ereg->getvalA()->getOutput();
-   uint64_t valB = ereg->getvalB()->getOutput();
-   uint64_t dstE = ereg->getdstE()->getOutput();
-   uint64_t dstM = ereg->getdstM()->getOutput();
+    uint64_t icode = ereg->geticode()->getOutput();
+    uint64_t ifun = ereg->getifun()->getOutput();
+    uint64_t valC = ereg->getvalC()->getOutput();
+    uint64_t valA = ereg->getvalA()->getOutput();
+    uint64_t valB = ereg->getvalB()->getOutput();
+    uint64_t dstE = ereg->getdstE()->getOutput();
+    uint64_t dstM = ereg->getdstM()->getOutput();
 
-   uint64_t val_aluA = aluA(icode, valA, valC);
-   uint64_t val_aluB = aluB(icode, valB);
-   uint64_t val_alufun = alufun(icode, ifun);
+    uint64_t val_aluA = aluA(icode, valA, valC);
+    uint64_t val_aluB = aluB(icode, valB);
+    uint64_t val_alufun = alufun(icode, ifun);
 
-   uint64_t valE = alu(val_aluA, val_aluB, val_alufun);
+    uint64_t valE = alu(val_aluA, val_aluB, val_alufun);
 
-   if (set_cc(icode))
-   {
-      bool error = false;
-      ConditionCodes *ccInstance = ConditionCodes::getInstance();
-      uint64_t cc = ccInstance->getConditionCode(valE, error);
-      ccInstance->setConditionCode(cc, icode, error);
-   }
+    cc(icode, ifun, valA, valB);
 
-   ConditionCodes *ccInstance = ConditionCodes::getInstance();
-   bool error = false;
-   bool zf = ccInstance->getConditionCode(ZF, error);
-   bool sf = ccInstance->getConditionCode(SF, error);
-   bool of = ccInstance->getConditionCode(OF, error);
+    uint64_t e_Cnd = 0;
+    if (icode == 0)
+    {
+        e_Cnd = 0;
+    }
+    else if (icode == 3)
+    {
+        e_Cnd = 0;
+    }
+    else if (icode != 1)
+    {
+        if (ifun == 0)
+        {
+            e_Cnd = true;
+        }
+        else
+        {
+            e_Cnd = false;
+        }
+    }
 
-   // Correctly calculate e_Cnd
-   uint64_t e_Cnd = 0; // Default to 0
-   if (icode == 0) // If nop instruction
-   {
-      e_Cnd = 0; // Explicitly set Cnd to 0 for nop
-   }
-   else if (icode == 3) // If irmovq instruction
-   {
-      e_Cnd = 0; // Explicitly set Cnd to 0 for irmovq
-   }
-   else if (icode != 1) // If not a NoOp instruction
-   {
-      e_Cnd = (ifun == 0) ? true : false; // Placeholder logic for other instructions
-   }
+    setMInput(mreg, ereg->getstat()->getOutput(), icode, e_Cnd, valE, valA, dstE, dstM);
 
-   setMInput(mreg, ereg->getstat()->getOutput(), icode, e_Cnd, valE, valA, dstE, dstM);
-
-   return false;
+    return false;
 }
 
 uint64_t ExecuteStage::gete_dstE()
@@ -145,7 +138,14 @@ uint64_t ExecuteStage::alufun(uint64_t E_icode, uint64_t E_ifun)
 
 bool ExecuteStage::set_cc(uint64_t E_icode)
 {
-   return E_icode == IOPQ;
+   if (E_icode == IOPQ)
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 
 uint64_t ExecuteStage::e_dstE(uint64_t E_icode, uint64_t e_Cnd, uint64_t E_dstE)
@@ -154,7 +154,10 @@ uint64_t ExecuteStage::e_dstE(uint64_t E_icode, uint64_t e_Cnd, uint64_t E_dstE)
    {
       return RNONE;
    }
-   else return E_dstE;
+   else
+   {
+      return E_dstE;
+   }
 }
 
 void ExecuteStage::cc(uint64_t E_icode, uint64_t E_ifun, uint64_t E_valA, uint64_t E_valB)
@@ -174,24 +177,31 @@ void ExecuteStage::cc(uint64_t E_icode, uint64_t E_ifun, uint64_t E_valA, uint64
 
 uint64_t ExecuteStage::alu(uint64_t opA, uint64_t opB, uint64_t alufun)
 {
-   switch (alufun)
+   if (alufun == ADDQ)
    {
-      case ADDQ:
-         return opA + opB;
-      case SUBQ:
-         return opA - opB;
-      case XORQ:
-         return opA ^ opB;
-      case ANDQ:
-         return opA & opB;
-      default:
-         return 0;
+      return opA + opB;
+   }
+   else if (alufun == SUBQ)
+   {
+      return opA - opB;
+   }
+   else if (alufun == XORQ)
+   {
+      return opA ^ opB;
+   }
+   else if (alufun == ANDQ)
+   {
+      return opA & opB;
+   }
+   else
+   {
+      return 0;
    }
 }
 
 /* doClockHigh
  * applies the appropriate control signal to the F
- * and D register intances
+ * and D register instances
  *
  * @param: pregs - array of the pipeline register (F, D, E, M, W instances)
  */
@@ -211,8 +221,7 @@ void ExecuteStage::doClockHigh(PipeReg ** pregs)
 /* setInput
  * provides the input to potentially be stored in the M register
  * during doClockHigh
- *
-*/
+ */
 void ExecuteStage::setMInput(M * mreg, uint64_t stat, uint64_t icode, uint64_t Cnd, 
    uint64_t valE, uint64_t valA, 
    uint64_t dstE, uint64_t dstM)

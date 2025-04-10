@@ -142,6 +142,11 @@ uint64_t DecodeStage::d_dstM(D * dreg, uint64_t D_rA, uint64_t D_icode)
 
 uint64_t DecodeStage::d_valA(uint64_t d_srcA, ExecuteStage *executeStage, M *mreg, W *wreg)
 {
+    if (d_srcA == RNONE)
+    {
+        return 0; // Return 0 if there is no valid source A
+    }
+
     uint64_t e_dstE = executeStage->gete_dstE();
     uint64_t e_valE = executeStage->gete_valE();
     uint64_t M_dstE = mreg->getdstE()->getOutput();
@@ -170,6 +175,11 @@ uint64_t DecodeStage::d_valA(uint64_t d_srcA, ExecuteStage *executeStage, M *mre
 
 uint64_t DecodeStage::d_valB(uint64_t d_srcB, ExecuteStage *executeStage, M *mreg, W *wreg)
 {
+    if (d_srcB == RNONE)
+    {
+        return 0; // Return 0 if there is no valid source B
+    }
+
     uint64_t e_dstE = executeStage->gete_dstE();
     uint64_t e_valE = executeStage->gete_valE();
     uint64_t M_dstE = mreg->getdstE()->getOutput();
