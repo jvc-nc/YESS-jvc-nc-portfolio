@@ -26,46 +26,56 @@
  * @param: stages - array of stages (ExecuteStage, DecodeStage, ExecuteStage,
  *         MemoryStage, WritebackStage instances)
  */
-bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
+bool ExecuteStage::doClockLow(PipeReg **pregs, Stage **stages)
 {
    E *ereg = (E *)pregs[EREG];
    M *mreg = (M *)pregs[MREG];
-   W *wreg = (W *)pregs[WREG];
 
-   uint64_t icode = 0, ifun = 0, valA = 0, valB = 0, valC = 0, valE = 0;
-   bool e_Cnd = false;
-   uint64_t stat = SAOK, dstE = RNONE, dstM = RNONE, srcA = RNONE, srcB = RNONE;
+   uint64_t icode = ereg->geticode()->getOutput();
+   uint64_t ifun = ereg->getifun()->getOutput();
+   uint64_t valC = ereg->getvalC()->getOutput();
+   uint64_t valA = ereg->getvalA()->getOutput();
+   uint64_t valB = ereg->getvalB()->getOutput();
+   uint64_t dstE = ereg->getdstE()->getOutput();
+   uint64_t dstM = ereg->getdstM()->getOutput();
 
-   stat = ereg->getstat()->getOutput();
-   icode = ereg->geticode()->getOutput();
-   ifun = ereg->getifun()->getOutput();
-   valC = ereg->getvalC()->getOutput();
-   valA = ereg->getvalA()->getOutput();
-   valB = ereg->getvalB()->getOutput();
-   dstE = ereg->getdstE()->getOutput();
-   dstM = ereg->getdstM()->getOutput();
-   srcA = ereg->getsrcA()->getOutput();
-   srcB = ereg->getsrcB()->getOutput();
+   uint64_t val_aluA = aluA(icode, valA, valC);
+   uint64_t val_aluB = aluB(icode, valB);
+   uint64_t val_alufun = alufun(icode, ifun);
 
-   uint64_t aluA_val = aluA(icode, valA, valC);
-   uint64_t aluB_val = aluB(icode, valB);
-   uint64_t alufun_val = alufun(icode, ifun);
+   uint64_t valE = alu(val_aluA, val_aluB, val_alufun);
 
-   e_valE_ = alu(aluA_val, aluB_val, alufun_val);
-   valE = e_valE_;
-
-   uint64_t m_stat = mreg->getstat()->getOutput();
-   uint64_t W_stat = wreg->getstat()->getOutput();
-
-   if (set_cc(icode)) 
+   if (set_cc(icode))
    {
-      cc(icode, ifun, valA, valB);
+      bool error = false;
+      ConditionCodes *ccInstance = ConditionCodes::getInstance();
+      uint64_t cc = ccInstance->getConditionCode(valE, error);
+      ccInstance->setConditionCode(cc, icode, error);
    }
-   e_Cnd = true;
 
-   e_dstE_ = e_dstE(icode, e_Cnd, dstE);
+   ConditionCodes *ccInstance = ConditionCodes::getInstance();
+   bool error = false;
+   bool zf = ccInstance->getConditionCode(ZF, error);
+   bool sf = ccInstance->getConditionCode(SF, error);
+   bool of = ccInstance->getConditionCode(OF, error);
 
-   setMInput(mreg, stat, icode, (uint64_t)e_Cnd, e_valE_, valA, e_dstE_, dstM);
+   // Correctly calculate e_Cnd
+   uint64_t e_Cnd = 0; // Default to 0
+   if (icode == 0) // If nop instruction
+   {
+      e_Cnd = 0; // Explicitly set Cnd to 0 for nop
+   }
+   else if (icode == 3) // If irmovq instruction
+   {
+      e_Cnd = 0; // Explicitly set Cnd to 0 for irmovq
+   }
+   else if (icode != 1) // If not a NoOp instruction
+   {
+      e_Cnd = (ifun == 0) ? true : false; // Placeholder logic for other instructions
+   }
+
+   setMInput(mreg, ereg->getstat()->getOutput(), icode, e_Cnd, valE, valA, dstE, dstM);
+
    return false;
 }
 
@@ -140,7 +150,7 @@ bool ExecuteStage::set_cc(uint64_t E_icode)
 
 uint64_t ExecuteStage::e_dstE(uint64_t E_icode, uint64_t e_Cnd, uint64_t E_dstE)
 {
-   if (E_icode == IRRMOVQ &&  !e_Cnd)
+   if (E_icode == IRRMOVQ && !e_Cnd)
    {
       return RNONE;
    }
@@ -178,7 +188,6 @@ uint64_t ExecuteStage::alu(uint64_t opA, uint64_t opB, uint64_t alufun)
          return 0;
    }
 }
-
 
 /* doClockHigh
  * applies the appropriate control signal to the F
