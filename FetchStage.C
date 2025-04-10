@@ -149,13 +149,19 @@ void FetchStage::buildValC(uint64_t f_pc, uint64_t icode, uint64_t &valC, bool n
    if (need_valC)
    {
       Memory *mem = Memory::getInstance();
-      uint64_t increment = need_regId ? 2 : 1;
       bool error = false;
-      valC = mem->getLong(f_pc + increment, error);
 
-      if (error)
+      uint64_t incrementedPC = PCincrement(f_pc, need_regId, false);
+      valC = 0;
+      for (int i = 0; i < 5; i++)
       {
-         valC = 0;
+         uint64_t byte = mem->getByte(incrementedPC + i, error);
+         if (error)
+         {
+            valC = 0;
+            break;
+         }
+         valC |= (byte << (i * 8));
       }
    }
    else
