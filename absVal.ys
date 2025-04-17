@@ -1,0 +1,78 @@
+.pos 0
+    irmovq list, %r8       
+
+    mrmovq (%r8), %r9      
+    nop                    
+    nop
+    nop
+    nop
+    andq %r9, %r9          
+    jge next1              
+    irmovq $0, %r10        
+    subq %r9, %r10         
+    rmmovq %r10, (%r8)     
+next1:
+    irmovq $8, %r11        
+    addq %r11, %r8
+
+    mrmovq (%r8), %r9      
+    nop                    
+    nop
+    nop
+    nop
+    andq %r9, %r9          
+    jge next2              
+    irmovq $0, %r10        
+    subq %r9, %r10         
+    rmmovq %r10, (%r8)     
+next2:
+    irmovq $8, %r11        
+    addq %r11, %r8
+
+    mrmovq (%r8), %r9      
+    nop                    
+    nop
+    nop
+    nop
+    andq %r9, %r9          
+    jge next3              
+    irmovq $0, %r10        
+    subq %r9, %r10         
+    rmmovq %r10, (%r8)     
+next3:
+    irmovq $8, %r11        
+    addq %r11, %r8
+
+    mrmovq (%r8), %r9      
+    nop                    
+    nop
+    nop
+    nop
+    andq %r9, %r9          
+    jge next4              
+    irmovq $0, %r10        
+    subq %r9, %r10         
+    rmmovq %r10, (%r8)     
+next4:
+    irmovq $8, %r11        
+    addq %r11, %r8
+
+    mrmovq (%r8), %r9      
+    nop                    
+    nop
+    nop
+    nop
+    andq %r9, %r9          
+    jge done               
+    irmovq $0, %r10        
+    subq %r9, %r10         
+    rmmovq %r10, (%r8)     
+done:
+    halt                   
+
+.align 8
+list: .quad -2
+      .quad 5
+      .quad -15
+      .quad 0
+      .quad -1

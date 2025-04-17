@@ -42,5 +42,10 @@ lab*
 iyas
 iyessl8
 
+# Ignore yis and yas executables
+yis
+yas
+
+
 # Other ignored files and directories
 Outputs/
