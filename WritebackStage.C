@@ -47,11 +47,14 @@ bool WritebackStage::doClockLow(PipeReg ** pregs, Stage ** stages)
  */
 void WritebackStage::doClockHigh(PipeReg ** pregs)
 {
-   W *wreg = (W *) pregs[WREG];
+   W *wreg = (W *)pregs[WREG];
 
    uint64_t W_dstE = wreg->getdstE()->getOutput();
    uint64_t W_valE = wreg->getvalE()->getOutput();
-   bool error = false;
+   uint64_t W_dstM = wreg->getdstM()->getOutput();
+   uint64_t W_valM = wreg->getvalM()->getOutput();
+   bool error;
 
    RegisterFile::getInstance()->writeRegister(W_valE, W_dstE, error);
+   RegisterFile::getInstance()->writeRegister(W_valM, W_dstM, error);
 }

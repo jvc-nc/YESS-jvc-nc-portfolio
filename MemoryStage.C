@@ -12,6 +12,8 @@
 #include "MemoryStage.h"
 #include "Status.h"
 #include "Debug.h"
+#include "Instructions.h"
+#include "Memory.h"
 
 
 /*
@@ -37,9 +39,61 @@ bool MemoryStage::doClockLow(PipeReg ** pregs, Stage ** stages)
    dstE = mreg->getdstE()->getOutput();
    dstM = mreg->getdstM()->getOutput();
    
+   uint64_t mem_address = addr(mreg);
+   bool read = mem_read(mreg);
+   bool write = mem_write(mreg);
+
+   bool error;
+   if (read)
+   {
+      valM = Memory::getInstance()->getLong(mem_address, error);
+   }
+   else if (write)
+   {
+      Memory::getInstance()->putLong(valE, mem_address, error);
+   }
+   else
+   {
+      valM = 0;
+   }
+
    setWInput(wreg, stat, icode, valE, valM, dstE, dstM);
    return false;
 }
+
+
+uint64_t MemoryStage::addr(M *mreg) 
+{
+   uint64_t icode = mreg->geticode()->getOutput();
+   uint64_t valE = mreg->getvalE()->getOutput();
+   uint64_t valA = mreg->getvalA()->getOutput();
+
+   if (icode == IRMMOVQ || icode == IPUSHQ || icode == ICALL || icode == IMRMOVQ) 
+   {
+      return valE;
+   } 
+   else if (icode == IPOPQ || icode == IRET) 
+   {
+      return valA;
+   } 
+   else 
+   {
+      return 0;
+   }
+}
+
+bool MemoryStage::mem_read(M *mreg) 
+{
+   uint64_t icode = mreg->geticode()->getOutput();
+   return (icode == IMRMOVQ || icode == IPOPQ || icode == IRET);
+}
+
+bool MemoryStage::mem_write(M *mreg) 
+{
+   uint64_t icode = mreg->geticode()->getOutput();
+   return (icode == IRMMOVQ || icode == IPUSHQ || icode == ICALL);
+}
+
 
 /* doClockHigh
  * applies the appropriate control signal to the F

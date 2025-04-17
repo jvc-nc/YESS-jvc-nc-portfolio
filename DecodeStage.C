@@ -143,7 +143,7 @@ uint64_t DecodeStage::d_valA(uint64_t d_srcA, ExecuteStage *executeStage, M *mre
 {
     if (d_srcA == RNONE)
     {
-        return 0; // Return 0 if there is no valid source A
+        return 0;
     }
 
     uint64_t e_dstE = executeStage->gete_dstE();
@@ -176,7 +176,7 @@ uint64_t DecodeStage::d_valB(uint64_t d_srcB, ExecuteStage *executeStage, M *mre
 {
     if (d_srcB == RNONE)
     {
-        return 0; // Return 0 if there is no valid source B
+        return 0;
     }
 
     uint64_t e_dstE = executeStage->gete_dstE();

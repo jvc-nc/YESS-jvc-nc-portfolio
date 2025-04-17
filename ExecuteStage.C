@@ -46,17 +46,14 @@ bool ExecuteStage::doClockLow(PipeReg **pregs, Stage **stages)
    cc(icode, valE, val_aluA, val_aluB, val_alufun);
 
    uint64_t e_Cnd = 0;
-   if (icode == IRRMOVQ || icode == IJXX)
-   {
-      ConditionCodes *ccInstance = ConditionCodes::getInstance();
-      bool error = false;
-      e_Cnd = ccInstance->getConditionCode(ifun, error);
-   }
+   e_Cnd = cond(icode, ifun);
 
    e_dstE_ = e_dstE(icode, e_Cnd, dstE);
    e_valE_ = valE;
 
-   setMInput(mreg, ereg->getstat()->getOutput(), icode, e_Cnd, valE, valA, e_dstE_, dstM);
+   uint64_t stat = ereg->getstat()->getOutput();
+   
+   setMInput(mreg, stat, icode, e_Cnd, valE, valA, e_dstE_, dstM);
 
    return false;
 }
@@ -207,7 +204,6 @@ uint64_t ExecuteStage::cond(uint64_t icode, uint64_t ifun)
 
    ConditionCodes *ccInstance = ConditionCodes::getInstance();
    bool error = false;
-
    bool zf = ccInstance->getConditionCode(ZF, error);
    bool sf = ccInstance->getConditionCode(SF, error);
    bool of = ccInstance->getConditionCode(OF, error);
@@ -225,9 +221,9 @@ uint64_t ExecuteStage::cond(uint64_t icode, uint64_t ifun)
       case 4:
          return !zf;
       case 5:
-         return !(sf ^ of) & !zf;
-      case 6:
          return !(sf ^ of);
+      case 6:
+         return !(sf ^ of) & !zf;
       default:
          return 0;
    }

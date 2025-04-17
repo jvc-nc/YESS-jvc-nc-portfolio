@@ -71,16 +71,18 @@ uint64_t RegisterFile::readRegister(int32_t regNumber, bool & error)
  * @param number of register to be modified (index into reg array)
  * @returns sets error to false if regNumber is valid and true otherwise
  */
-void RegisterFile::writeRegister(uint64_t value, int32_t regNumber, 
-                                 bool & error)
+void RegisterFile::writeRegister(uint64_t value, int32_t regNumber,
+                                 bool &error)
 {
-   if (regNumber >= 0 && regNumber <= 0xe){
-     error = false;
-     reg[regNumber] = value;
-   } else {
+   if (regNumber >= 0 && regNumber <= 0xe)
+   {
+      error = false;
+      reg[regNumber] = value;
+   }
+   else
+   {
       error = true;
    }
-  
 }
 
 /**
