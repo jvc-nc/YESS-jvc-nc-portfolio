@@ -48,6 +48,7 @@ bool MemoryStage::doClockLow(PipeReg ** pregs, Stage ** stages)
    if (read)
    {
       valM = Memory::getInstance()->getLong(mem_address, error);
+      m_valM = valM;
    }
    else if (write)
    {
@@ -56,10 +57,16 @@ bool MemoryStage::doClockLow(PipeReg ** pregs, Stage ** stages)
    else
    {
       valM = 0;
+      m_valM = 0;
    }
 
    setWInput(wreg, stat, icode, valE, valM, dstE, dstM);
    return false;
+}
+
+uint64_t MemoryStage::getvalM()
+{
+   return m_valM;
 }
 
 

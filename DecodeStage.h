@@ -10,8 +10,8 @@ class DecodeStage: public Stage
       uint64_t d_srcB(D * dreg, uint64_t D_rB, uint64_t D_icode);
       uint64_t d_dstE(D * dreg, uint64_t D_rB, uint64_t D_icode);
       uint64_t d_dstM(D * dreg, uint64_t D_rA, uint64_t D_icode);
-      uint64_t d_valA(uint64_t d_srcA, ExecuteStage *executeStage, M *mreg, W *wreg);
-      uint64_t d_valB(uint64_t d_srcB, ExecuteStage *executeStage, M *mreg, W *wreg);
+      uint64_t d_valA(uint64_t d_srcA, uint64_t D_icode, uint64_t D_valP, ExecuteStage *executeStage, M *mreg, W *wreg, MemoryStage *memoryStage);
+      uint64_t d_valB(uint64_t d_srcB, ExecuteStage *executeStage, M *mreg, W *wreg, MemoryStage *memoryStage);
       public:
       bool doClockLow(PipeReg ** pregs, Stage ** stages);
       void doClockHigh(PipeReg ** pregs);
