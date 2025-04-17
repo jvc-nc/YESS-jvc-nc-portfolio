@@ -198,6 +198,42 @@ uint64_t ExecuteStage::alu(uint64_t opA, uint64_t opB, uint64_t alufun)
    return result;
 }
 
+uint64_t ExecuteStage::cond(uint64_t icode, uint64_t ifun)
+{
+   if (icode != IJXX && icode != ICMOVXX) 
+   {
+      return 0;
+   }
+
+   ConditionCodes *ccInstance = ConditionCodes::getInstance();
+   bool error = false;
+
+   bool zf = ccInstance->getConditionCode(ZF, error);
+   bool sf = ccInstance->getConditionCode(SF, error);
+   bool of = ccInstance->getConditionCode(OF, error);
+
+   switch (ifun)
+   {
+      case 0:
+         return 1;
+      case 1:
+         return (sf ^ of) | zf;
+      case 2:
+         return sf ^ of;
+      case 3:
+         return zf;
+      case 4:
+         return !zf;
+      case 5:
+         return !(sf ^ of) & !zf;
+      case 6:
+         return !(sf ^ of);
+      default:
+         return 0;
+   }
+}
+
+
 /* doClockHigh
  * applies the appropriate control signal to the F
  * and D register instances

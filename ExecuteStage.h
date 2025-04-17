@@ -15,6 +15,8 @@ class ExecuteStage: public Stage
       uint64_t e_dstE(uint64_t E_icode, uint64_t e_Cnd, uint64_t E_dstE);
       void cc(uint64_t E_icode, uint64_t result, uint64_t opA, uint64_t opB, uint64_t alufun);
       uint64_t alu(uint64_t opA, uint64_t opB, uint64_t alufun);
+      uint64_t cond(uint64_t icode, uint64_t ifun);
+
    public:
       bool doClockLow(PipeReg ** pregs, Stage ** stages);
       void doClockHigh(PipeReg ** pregs);
