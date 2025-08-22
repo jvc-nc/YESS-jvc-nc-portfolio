@@ -49,3 +49,5 @@ yas
 
 # Other ignored files and directories
 Outputs/
+.idea/
+build/
